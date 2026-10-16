@@ -16,7 +16,7 @@ from pathlib import Path
 
 TARGET = "https://uprootnetworks.com/"
 HOST = "uprootnetworks.com"
-GUIDANCE = "https://uprootnetworks.com/wp-content/uploads/2026/10/setup-profile.txt"
+GUIDANCE = "https://uprootnetworks.com/wp-content/uploads/2026/10/setup-profile-2.txt"
 MAX_BYTES = 32768
 REPORT = Path("diagnostic-report.json")
 
