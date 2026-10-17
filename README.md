@@ -38,13 +38,7 @@ The detailed report includes DNS resolution, a direct TCP connection attempt, re
 
 Use `--samples 5` to take more samples or `--timeout 10` for a slower network. These are bounded connectivity checks rather than a continuous monitor. Python child processes perform the checks and submit the support summary over verified HTTPS.
 
-To keep the support summary local, add `--local-only`:
-
-```sh
-python3 netcheck.py service.example.com --local-only
-```
-
-Exit code 0 means collection and the selected submission mode completed; connectivity problems can still appear in the findings. Exit code 1 indicates a setup or worker failure. Exit code 2 indicates support submission failed after diagnostics completed. An HTTP 429 from intake means its rate limit was reached; wait at least a minute before retrying.
+Exit code 0 means collection and support submission completed; connectivity problems can still appear in the findings. Exit code 1 indicates a setup or worker failure. Exit code 2 indicates support submission failed after diagnostics completed. An HTTP 429 from intake means its rate limit was reached; wait at least a minute before retrying.
 
 ## Tests
 

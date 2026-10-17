@@ -64,15 +64,15 @@ class SupportTests(unittest.TestCase):
         summary = netcheck.make_summary({"started_utc": "2026-10-17T00:00:00+00:00", "checks": [result]})
         self.assertEqual(summary["https"]["status"], "error")
 
-    def test_local_only_and_failed_submission_keep_diagnostics(self):
-        for local_only in (True, False):
-            with self.subTest(local_only=local_only), tempfile.TemporaryDirectory() as folder, \
+    def test_submission_is_attempted_and_failed_submission_keeps_diagnostics(self):
+        for status in ("accepted", "error"):
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as folder, \
                  patch("netcheck.tls_context"), patch("netcheck.run_probe", return_value=healthy()), \
-                 patch("netcheck.submit_summary", return_value={"status": "error", "detail": "offline"}) as submit:
-                command = ["netcheck.py", "--output-dir", folder] + (["--local-only"] if local_only else [])
+                 patch("netcheck.submit_summary", return_value={"status": status, "receipt": "test-receipt"}) as submit:
+                command = ["netcheck.py", "--output-dir", folder]
                 with patch("sys.argv", command):
-                    self.assertEqual(netcheck.main(), 0 if local_only else 2)
-                submit.assert_not_called() if local_only else submit.assert_called_once()
+                    self.assertEqual(netcheck.main(), 0 if status == "accepted" else 2)
+                submit.assert_called_once()
                 reports = list(Path(folder).glob("*/diagnostic-report.json"))
                 self.assertEqual(len(reports), 1)
                 self.assertEqual(reports[0].stat().st_mode & 0o777, 0o600)

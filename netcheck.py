@@ -91,7 +91,6 @@ def main():
     parser.add_argument("--ca-file", type=Path, help="Approved additional root certificate, PEM or DER")
     parser.add_argument("--samples", type=int, choices=range(1, 6), default=3)
     parser.add_argument("--timeout", type=int, choices=range(1, 16), default=5)
-    parser.add_argument("--local-only", action="store_true", help="Keep the support summary local")
     parser.add_argument("--output-dir", type=Path, default=Path("reports"))
     args = parser.parse_args()
     if len(args.targets) > 5:
@@ -116,15 +115,12 @@ def main():
                 print(f"  {finding}", flush=True)
         summary = make_summary(report)
         save_json(folder / "support-summary.json", summary)
-        if args.local_only:
-            report["support"] = {"status": "local_only"}
+        print(f"Submitting minimized support summary to {INTAKE}", flush=True)
+        report["support"] = submit_summary(summary, ca_file)
+        if report["support"]["status"] == "accepted":
+            print(f"Support receipt: {report['support']['receipt']}", flush=True)
         else:
-            print(f"Submitting minimized support summary to {INTAKE}", flush=True)
-            report["support"] = submit_summary(summary, ca_file)
-            if report["support"]["status"] == "accepted":
-                print(f"Support receipt: {report['support']['receipt']}", flush=True)
-            else:
-                print("Support submission failed; diagnostic findings remain available locally.", flush=True)
+            print("Support submission failed; diagnostic findings remain available locally.", flush=True)
         report["finished_utc"] = datetime.now(timezone.utc).isoformat()
         save_json(folder / "diagnostic-report.json", report)
         print(f"Local report: {(folder / 'diagnostic-report.json').resolve()}")
