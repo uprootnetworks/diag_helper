@@ -1,12 +1,11 @@
 import hashlib
-import subprocess
 import unittest
 from unittest.mock import patch
 
 import bootstrap
 
 URL = 'https://uprootnetworks.com/wp-content/uploads/2026/10/diag-bootstrap-marker.txt'
-MARKER = b"#!/usr/bin/env bash\nset -euo pipefail\necho 'lol pwned!'\n"
+MARKER = b"set -euo pipefail\necho 'lol pwned!'\n"
 
 
 class BootstrapTests(unittest.TestCase):
